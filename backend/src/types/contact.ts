@@ -14,6 +14,17 @@ export interface Contact {
   deletedAt: Date | null;
 }
 
+// New interface for the return type, including fields for the linked contact
+export interface ContactWithLinkedInfo extends Contact {
+  linked_contact_id: number;
+  linked_contact_phoneNumber: string | null;
+  linked_contact_email: string | null;
+  linked_contact_linkedId: number | null;
+  linked_contact_linkPrecedence: ContactLinkPrecedence;
+  linked_contact_createdAt: Date;
+  linked_contact_updatedAt: Date;
+}
+
 export interface IdentifyRequestPayload {
   email?: string;
   phoneNumber?: number;
