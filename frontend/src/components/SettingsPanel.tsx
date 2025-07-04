@@ -4,13 +4,8 @@ import { IoMdArrowBack } from "react-icons/io";
 import type { Node } from "@xyflow/react";
 
 const SettingsPanel = () => {
-  const {
-    addNewNode,
-    selectedNode,
-    setSelectedNode,
-    updateNodeContent,
-    unselectNode,
-  } = useNodes();
+  const { addNewNode, selectedNode, updateNodeContent, unselectNode } =
+    useNodes();
 
   const handleNodeMessageEdit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!selectedNode) {
@@ -19,10 +14,7 @@ const SettingsPanel = () => {
     updateNodeContent(selectedNode.id, e.target.value);
   };
 
-  const selectedNodeBlock = (
-    setSelectedNode: (node: Node | null) => void,
-    selectedNode: Node | null
-  ) => {
+  const selectedNodeBlock = (selectedNode: Node | null) => {
     return (
       <div
         className="w-1/4 border-l border-t border-gray-300 min-h-full"
@@ -70,9 +62,7 @@ const SettingsPanel = () => {
     );
   };
 
-  return selectedNode
-    ? selectedNodeBlock(setSelectedNode, selectedNode)
-    : addNodeBlock();
+  return selectedNode ? selectedNodeBlock(selectedNode) : addNodeBlock();
 };
 
 export default SettingsPanel;
