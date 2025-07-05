@@ -6,7 +6,13 @@ import type {
   OnEdgesChange,
   Connection,
 } from "@xyflow/react";
-import { createContext, useState, useContext, useCallback } from "react";
+import {
+  createContext,
+  useState,
+  useContext,
+  useCallback,
+  useEffect,
+} from "react";
 import { applyNodeChanges, applyEdgeChanges, addEdge } from "@xyflow/react";
 
 interface INodeContextType {
@@ -23,6 +29,10 @@ interface INodeContextType {
   updateNodeContent: (nodeId: string, content: string) => void;
   isValidConnection: (connection: Connection | Edge) => boolean;
   unselectNode: () => void;
+  saveError: string | null;
+  saveChanges: () => void;
+  clearChanges: () => void;
+  saveSuccess: string | null;
 }
 interface INodeProviderProps {
   children: ReactNode;
@@ -34,6 +44,17 @@ export const NodeProvider: React.FC<INodeProviderProps> = ({ children }) => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (localStorage.getItem("nodes")) {
+      setNodes(JSON.parse(localStorage.getItem("nodes") as string));
+    }
+    if (localStorage.getItem("edges")) {
+      setEdges(JSON.parse(localStorage.getItem("edges") as string));
+    }
+  }, []);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {
@@ -132,6 +153,58 @@ export const NodeProvider: React.FC<INodeProviderProps> = ({ children }) => {
     setSelectedNode(null);
   };
 
+  const saveChanges = () => {
+    console.log("[NodesContext] saveChanges");
+    console.log("[NodesContext] nodes:", nodes);
+    console.log("[NodesContext] edges:", edges);
+
+    if (typeof window === "undefined") {
+      console.log("[NodesContext] window is undefined");
+      return;
+    }
+    const n = nodes.length;
+    const nodesTarget: { [key: string]: string } = {};
+    let nodesWithTarget: number = 0;
+    for (const edge of edges) {
+      if (!nodesTarget.source) {
+        ++nodesWithTarget;
+      }
+      nodesTarget[edge.source] = edge.target;
+    }
+    if (n > 1 && n - nodesWithTarget > 1) {
+      setSaveError("Cannot Save Flow");
+      setSaveError(null);
+
+      setTimeout(() => {
+        setSaveError(null);
+      }, 10 * 1000);
+      return;
+    }
+    setSaveError(null);
+    localStorage.setItem("nodes", JSON.stringify(nodes));
+    localStorage.setItem("edges", JSON.stringify(edges));
+
+    setSaveSuccess("Flow Saved Locally");
+    setTimeout(() => {
+      setSaveSuccess(null);
+    }, 10 * 1000);
+
+    console.log("[NodesContext] saved changes");
+  };
+
+  const clearChanges = () => {
+    localStorage.removeItem("nodes");
+    localStorage.removeItem("edges");
+
+    setNodes([]);
+    setEdges([]);
+    setSaveError(null);
+    setSaveSuccess("Flow Cleared");
+    setTimeout(() => {
+      setSaveSuccess(null);
+    }, 10 * 1000);
+  };
+
   const contextValue = {
     nodes,
     setNodes,
@@ -146,6 +219,10 @@ export const NodeProvider: React.FC<INodeProviderProps> = ({ children }) => {
     updateNodeContent,
     isValidConnection,
     unselectNode,
+    saveError,
+    saveChanges,
+    clearChanges,
+    saveSuccess,
   };
 
   return (
