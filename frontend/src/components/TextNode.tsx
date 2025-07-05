@@ -23,13 +23,13 @@ const TextNode: React.FC<NodeProps<TextNodeData>> = ({ data, selected }) => {
     >
       {/* Node Header */}
       <div
-        className={`bg-purple-200 p-1 rounded-t-md flex items-center gap-2 ${selected ? "border-b border-purple-400" : ""}`}
+        className={`bg-purple-200 p-1 rounded-t-md flex items-center gap-2 ${selected ? "border-b border-purple-400 bg-purple-300" : ""}`}
       >
         <BiMessageRoundedDetail />
         <h6 className="font-bold text-sm">{data.label}</h6>
       </div>
 
-      {/* Node Body */}
+      {/* Node Text Content */}
       <div className="p-2">
         <p className="text-gray-700">{data.content}</p>
       </div>

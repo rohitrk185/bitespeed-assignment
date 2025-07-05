@@ -8,8 +8,10 @@ const Home = () => {
       <Header />
 
       <main className="w-full flex flex-grow">
+        {/* Left Side Nodes Panel */}
         <NodesPanel />
 
+        {/* Right Side Settings Panel */}
         <SettingsPanel />
       </main>
     </div>
